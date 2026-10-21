@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">일본어 단어 암기장</title>
+  <rect width="512" height="512" fill="#245fc7" />
+  <rect x="72" y="72" width="368" height="368" rx="72" fill="#ffffff" />
+  <text
+    x="256"
+    y="326"
+    fill="#20242d"
+    font-family="Noto Sans JP, Yu Gothic, Meiryo, sans-serif"
+    font-size="232"
+    font-weight="800"
+    text-anchor="middle"
+  >語</text>
+  <rect x="126" y="382" width="260" height="18" rx="9" fill="#137a54" />
+</svg>

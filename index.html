@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#245fc7" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="일본어 단어장" />
+    <meta name="description" content="단어 카드, 퀴즈, 쓰기와 한자 학습을 한곳에서 사용하는 일본어 단어 암기장" />
+    <title>일본어 단어 암기장</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="./styles.css?v=20261021-pwa" />
+    <script src="./words.js?v=20261021-pwa" defer></script>
+    <script src="./app.js?v=20261021-pwa" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">JAPANESE VOCAB</p>
+          <h1>일본어 단어 암기장</h1>
+        </div>
+        <button class="ghost-button" id="resetStudy" type="button">학습 기록 초기화</button>
+      </header>
+
+      <main>
+        <section class="study-layout" aria-label="단어 카드 학습">
+          <div class="study-main">
+            <div class="panel card-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow" id="deckLabel">전체 단어</p>
+                  <h2>카드로 하나씩 외우기</h2>
+                </div>
+                <strong id="cardCount">0 / 0</strong>
+              </div>
+
+              <button class="flashcard" id="flashcard" type="button" aria-label="단어 카드 뒤집기">
+                <span class="card-side" id="cardSide">앞면</span>
+                <span class="card-reading" id="cardReading" lang="ja">じゅんびちゅう</span>
+                <strong class="card-word" id="cardWord" lang="ja">準備中</strong>
+                <span class="card-meaning" id="cardMeaning">준비 중</span>
+                <span class="card-tag" id="cardTag">기초</span>
+              </button>
+
+              <div class="card-actions">
+                <button class="ghost-button" id="prevCard" type="button">이전</button>
+                <label class="ghost-button flip-lock-control" id="flipLockControl">
+                  <input id="keepFlipped" type="checkbox" />
+                  <span>뒤집기</span>
+                </label>
+                <button class="warn-button" id="hardCard" type="button">헷갈림</button>
+                <button class="primary-button" id="knowCard" type="button">외움</button>
+                <button class="ghost-button" id="nextCard" type="button">다음</button>
+              </div>
+            </div>
+
+            <button class="wordbook-launch" id="openWordbook" type="button">
+              <span class="japanese-reading-label" lang="ja">たんごちょう</span>
+              <strong lang="ja">単語帳</strong>
+              <em id="wordbookLaunchCount">0개</em>
+            </button>
+
+            <div class="learning-launch-grid">
+              <button class="wordbook-launch opposite-launch" id="openOpposite" type="button">
+                <span class="japanese-reading-label" lang="ja">はんたいごがくしゅう</span>
+                <strong lang="ja">反対語学習</strong>
+                <em id="oppositeLaunchCount">0쌍</em>
+              </button>
+
+              <button class="wordbook-launch kanji-launch" id="openKanji" type="button">
+                <span class="japanese-reading-label" lang="ja">かんじがくしゅう</span>
+                <strong lang="ja">漢字学習</strong>
+                <em id="kanjiLaunchCount">0자</em>
+              </button>
+            </div>
+          </div>
+
+          <aside class="side-panel">
+            <div class="stat-grid">
+              <div class="stat-card">
+                <span>전체 단어</span>
+                <strong id="totalWords">0</strong>
+              </div>
+              <div class="stat-card">
+                <span>외운 단어</span>
+                <strong id="knownWords">0</strong>
+              </div>
+              <div class="stat-card">
+                <span>헷갈림</span>
+                <strong id="hardWords">0</strong>
+              </div>
+              <div class="stat-card">
+                <span>오늘 학습</span>
+                <strong id="todayStudied">0</strong>
+              </div>
+            </div>
+
+            <div class="panel compact-panel">
+              <h2>학습 범위</h2>
+              <label class="field">
+                <span>보기</span>
+                <select id="deckFilter">
+                  <option value="all">전체 단어</option>
+                  <option value="learning">아직 안 외운 단어</option>
+                  <option value="hard">헷갈리는 단어</option>
+                  <option value="known">외운 단어</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>묶음</span>
+                <select id="categoryFilter">
+                  <option value="all">전체 묶음</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>카드 수</span>
+                <input id="cardLimitInput" type="number" min="1" inputmode="numeric" placeholder="전체" autocomplete="off" />
+              </label>
+              <button class="toggle-button" id="readingToggle" type="button" aria-pressed="false">히라가나 표시</button>
+              <label class="field">
+                <span>검색</span>
+                <input id="searchInput" type="search" placeholder="한자, 히라가나, 뜻 검색" autocomplete="off" />
+              </label>
+            </div>
+          </aside>
+        </section>
+
+        <section class="content-grid" aria-label="연습">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">QUIZ</p>
+                <h2>뜻 맞히기</h2>
+              </div>
+              <button class="ghost-button" id="newQuiz" type="button">새 문제</button>
+            </div>
+            <div class="quiz-box">
+              <div class="question-count">
+                <button class="quiz-progress" id="quizProgress" type="button" aria-expanded="false">0 / 0</button>
+                <form class="question-count-popover" id="quizCountForm" hidden>
+                  <label for="quizCountInput">문제 수</label>
+                  <input id="quizCountInput" type="number" min="1" inputmode="numeric" autocomplete="off" />
+                  <button class="small-button" type="submit">적용</button>
+                </form>
+              </div>
+              <h3 id="quizQuestion" lang="ja">문제를 준비 중입니다.</h3>
+              <div class="choice-grid" id="choiceGrid"></div>
+              <p class="helper-text" id="quizFeedback" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">WRITE</p>
+                <h2>일본어 쓰기</h2>
+              </div>
+              <button class="ghost-button" id="newWriting" type="button">새 문제</button>
+            </div>
+            <div class="writing-box">
+              <div class="question-count">
+                <button class="quiz-progress" id="writingProgress" type="button" aria-expanded="false">0 / 0</button>
+                <form class="question-count-popover" id="writingCountForm" hidden>
+                  <label for="writingCountInput">문제 수</label>
+                  <input id="writingCountInput" type="number" min="1" inputmode="numeric" autocomplete="off" />
+                  <button class="small-button" type="submit">적용</button>
+                </form>
+              </div>
+              <p class="writing-prompt" id="writingPrompt">문제를 준비 중입니다.</p>
+              <form class="writing-form" id="writingForm">
+                <input id="writingInput" type="text" lang="ja" placeholder="일본어 입력" autocomplete="off" />
+                <button class="primary-button" id="writingSubmit" type="submit">확인</button>
+              </form>
+              <p class="helper-text" id="writingFeedback" aria-live="polite"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel review-panel" aria-label="오답노트">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">REVIEW</p>
+              <h2>오답노트</h2>
+            </div>
+            <span id="reviewSummary">결과 없음</span>
+          </div>
+          <div class="review-list" id="reviewList"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="wordbookModal" hidden>
+      <section class="panel wordbook-dialog" role="dialog" aria-modal="true" aria-labelledby="wordbookDialogTitle">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow japanese-reading-label" lang="ja">たんごちょう</p>
+            <h2 id="wordbookDialogTitle" lang="ja">単語帳</h2>
+          </div>
+          <div class="dialog-actions">
+            <span id="listCount">0개</span>
+            <button class="ghost-button" id="closeWordbook" type="button">닫기</button>
+          </div>
+        </div>
+        <div class="wordbook-tools">
+          <span id="selectionCount">0개 선택</span>
+          <div class="selection-actions">
+            <button class="primary-button" id="studySelected" type="button">선택 단어만</button>
+            <button class="ghost-button" id="studyAll" type="button">전체 단어</button>
+            <button class="ghost-button" id="clearSelection" type="button">선택 해제</button>
+          </div>
+        </div>
+        <div class="mini-wordbook modal-mini-wordbook" id="miniWordbook"></div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="oppositeModal" hidden>
+      <section class="panel opposite-dialog" role="dialog" aria-modal="true" aria-labelledby="oppositeDialogTitle">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow japanese-reading-label" lang="ja">はんたいごがくしゅう</p>
+            <h2 id="oppositeDialogTitle" lang="ja">反対語学習</h2>
+          </div>
+          <button class="ghost-button" id="closeOpposite" type="button">닫기</button>
+        </div>
+
+        <div class="opposite-range-toolbar">
+          <div>
+            <span>학습할 반의어</span>
+            <strong id="oppositeRangeSummary">전체 · 0쌍</strong>
+          </div>
+          <button class="ghost-button" id="toggleOppositePicker" type="button" aria-expanded="false">선택</button>
+        </div>
+
+        <section class="opposite-picker" id="oppositePicker" aria-label="학습할 반의어 선택" hidden>
+          <div class="opposite-picker-actions">
+            <span id="oppositePickerCount">0쌍 선택</span>
+            <div>
+              <button class="small-button" id="selectAllOppositePairs" type="button">전체 선택</button>
+              <button class="small-button" id="useWordbookOppositePairs" type="button">단어장 범위</button>
+              <button class="small-button" id="clearOppositePairs" type="button">선택 해제</button>
+            </div>
+          </div>
+          <div class="opposite-pair-picker" id="oppositePairPicker"></div>
+        </section>
+
+        <div class="opposite-mode-tabs" role="tablist" aria-label="반의어 학습 방식">
+          <button class="active" id="oppositeStudyTab" type="button" role="tab" aria-selected="true" data-opposite-mode="study">
+            짝 암기
+          </button>
+          <button id="oppositeQuizTab" type="button" role="tab" aria-selected="false" data-opposite-mode="quiz">
+            반대말 퀴즈
+          </button>
+        </div>
+
+        <div class="opposite-study-pane" id="oppositeStudyPane" role="tabpanel" aria-labelledby="oppositeStudyTab">
+          <div class="opposite-study-progress">
+            <strong id="oppositePairProgress">0 / 0</strong>
+            <span id="oppositeScopeLabel">전체 반의어</span>
+          </div>
+          <div class="opposite-study-pair" id="oppositeStudyPair"></div>
+          <div class="opposite-study-actions">
+            <button class="ghost-button" id="prevOppositePair" type="button">이전</button>
+            <button class="primary-button" id="startOppositeQuiz" type="button">이 쌍들로 퀴즈</button>
+            <button class="ghost-button" id="nextOppositePair" type="button">다음</button>
+          </div>
+        </div>
+
+        <div class="opposite-quiz-pane" id="oppositeQuizPane" role="tabpanel" aria-labelledby="oppositeQuizTab" hidden>
+          <div class="opposite-quiz-head">
+            <div class="opposite-quiz-options">
+              <div class="question-count">
+                <button class="quiz-progress" id="oppositeProgress" type="button" aria-expanded="false">0 / 0</button>
+                <form class="question-count-popover" id="oppositeCountForm" hidden>
+                  <label for="oppositeCountInput">문제 수</label>
+                  <input id="oppositeCountInput" type="number" min="1" inputmode="numeric" autocomplete="off" />
+                  <button class="small-button" type="submit">적용</button>
+                </form>
+              </div>
+              <button class="toggle-button opposite-korean-toggle" id="oppositeKoreanToggle" type="button" aria-pressed="false">
+                한글 OFF
+              </button>
+            </div>
+            <button class="ghost-button" id="newOppositeQuiz" type="button">새 문제</button>
+          </div>
+          <p class="opposite-question-label">다음 단어의 반대말은?</p>
+          <div class="opposite-question" id="oppositeQuestion"></div>
+          <div class="opposite-choice-grid" id="oppositeChoiceGrid"></div>
+          <div class="opposite-feedback-row">
+            <p class="helper-text" id="oppositeFeedback" aria-live="polite"></p>
+            <button class="primary-button" id="oppositeNext" type="button" hidden>다음 문제</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="kanjiModal" hidden>
+      <section class="panel kanji-dialog" role="dialog" aria-modal="true" aria-labelledby="kanjiDialogTitle">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow japanese-reading-label" lang="ja">かんじがくしゅう</p>
+            <h2 id="kanjiDialogTitle" lang="ja">漢字学習</h2>
+          </div>
+          <button class="ghost-button" id="closeKanji" type="button">닫기</button>
+        </div>
+
+        <div class="opposite-range-toolbar kanji-range-toolbar">
+          <div>
+            <span>학습할 한자 단어</span>
+            <strong id="kanjiRangeSummary">단어장 범위 · 0개</strong>
+          </div>
+          <button class="ghost-button" id="toggleKanjiPicker" type="button" aria-expanded="false">선택</button>
+        </div>
+
+        <section class="opposite-picker kanji-picker" id="kanjiPicker" aria-label="학습할 한자 단어 선택" hidden>
+          <div class="opposite-picker-actions">
+            <span id="kanjiPickerCount">0개 선택</span>
+            <div>
+              <button class="small-button" id="selectAllKanjiWords" type="button">전체 선택</button>
+              <button class="small-button" id="useWordbookKanjiWords" type="button">단어장 범위</button>
+              <button class="small-button" id="clearKanjiWords" type="button">선택 해제</button>
+            </div>
+          </div>
+          <div class="mini-wordbook kanji-wordbook-picker" id="kanjiWordPicker"></div>
+        </section>
+
+        <div class="kanji-mode-tabs" role="tablist" aria-label="한자 학습 방식">
+          <button class="active" id="kanjiGroupTab" type="button" role="tab" aria-selected="true" data-kanji-mode="groups">
+            한자 묶음
+          </button>
+          <button id="kanjiReadingTab" type="button" role="tab" aria-selected="false" data-kanji-mode="reading">
+            한자 읽기
+          </button>
+          <button id="kanjiWritingTab" type="button" role="tab" aria-selected="false" data-kanji-mode="writing">
+            한자 쓰기
+          </button>
+          <button id="kanjiTracingTab" type="button" role="tab" aria-selected="false" data-kanji-mode="tracing">
+            한자 따라쓰기
+          </button>
+        </div>
+
+        <div id="kanjiGroupPane" role="tabpanel" aria-labelledby="kanjiGroupTab">
+          <div class="kanji-study-progress">
+            <strong id="kanjiGroupProgress">0 / 0</strong>
+            <span id="kanjiScopeLabel">현재 학습 범위 기준</span>
+          </div>
+          <div class="kanji-group-card" id="kanjiGroupCard"></div>
+          <div class="kanji-study-actions">
+            <button class="ghost-button" id="prevKanjiGroup" type="button">이전</button>
+            <button class="ghost-button" id="nextKanjiGroup" type="button">다음</button>
+          </div>
+        </div>
+
+        <div id="kanjiReadingPane" role="tabpanel" aria-labelledby="kanjiReadingTab" hidden>
+          <div class="kanji-reading-head">
+            <strong id="kanjiReadingProgress">0 / 0</strong>
+            <div class="kanji-reading-options">
+              <button class="toggle-button kanji-korean-toggle" id="kanjiKoreanToggle" type="button" aria-pressed="false">
+                한글 OFF
+              </button>
+              <button class="ghost-button" id="newKanjiReading" type="button">새 문제</button>
+            </div>
+          </div>
+          <p class="kanji-reading-label">한자의 읽는 법을 히라가나로 입력하세요.</p>
+          <div class="kanji-reading-question" id="kanjiReadingQuestion"></div>
+          <form class="kanji-reading-form" id="kanjiReadingForm">
+            <input id="kanjiReadingInput" type="text" lang="ja" placeholder="히라가나 입력" autocomplete="off" />
+            <button class="primary-button" id="kanjiReadingSubmit" type="submit">확인</button>
+          </form>
+          <p class="helper-text" id="kanjiReadingFeedback" aria-live="polite"></p>
+        </div>
+
+        <div id="kanjiWritingPane" role="tabpanel" aria-labelledby="kanjiWritingTab" hidden>
+          <div class="kanji-writing-head">
+            <strong id="kanjiWritingProgress">0 / 0</strong>
+            <div class="kanji-reading-options">
+              <div class="prompt-mode-slider" id="kanjiWritingPromptMode" role="radiogroup" aria-label="한자 쓰기 문제 표시 방식" data-mode="hiragana">
+                <span class="prompt-mode-indicator" aria-hidden="true"></span>
+                <button type="button" role="radio" aria-checked="true" data-writing-prompt-mode="hiragana">히라가나만</button>
+                <button type="button" role="radio" aria-checked="false" data-writing-prompt-mode="korean">한글만</button>
+                <button type="button" role="radio" aria-checked="false" data-writing-prompt-mode="both">모두</button>
+              </div>
+              <button class="ghost-button" id="newKanjiWriting" type="button">새 문제</button>
+            </div>
+          </div>
+          <p class="kanji-reading-label">제시된 힌트를 보고 단어 전체를 한자로 쓰세요.</p>
+          <div class="kanji-writing-question" id="kanjiWritingQuestion"></div>
+
+          <div class="kanji-writing-pad" id="kanjiWritingPad">
+            <canvas id="kanjiWritingCanvas" aria-label="한자 필기판"></canvas>
+            <div class="kanji-writing-tools">
+              <button class="ghost-button" id="undoKanjiStroke" type="button">한 획 취소</button>
+              <button class="ghost-button" id="clearKanjiCanvas" type="button">지우기</button>
+              <button class="primary-button" id="submitKanjiWriting" type="button">정답 제출</button>
+            </div>
+          </div>
+
+          <div class="kanji-writing-comparison" id="kanjiWritingComparison" hidden></div>
+          <div class="kanji-self-grade" id="kanjiSelfGrade" hidden>
+            <span>두 답을 비교해 직접 채점하세요.</span>
+            <div>
+              <button class="grade-button correct" id="gradeKanjiCorrect" type="button">정답</button>
+              <button class="grade-button wrong" id="gradeKanjiWrong" type="button">오답</button>
+            </div>
+          </div>
+          <div class="kanji-writing-feedback-row">
+            <p class="helper-text" id="kanjiWritingFeedback" aria-live="polite"></p>
+            <button class="primary-button" id="nextKanjiWriting" type="button" hidden>다음 문제</button>
+          </div>
+        </div>
+
+        <div id="kanjiTracingPane" role="tabpanel" aria-labelledby="kanjiTracingTab" hidden>
+          <div class="kanji-writing-head">
+            <strong id="kanjiTracingProgress">0 / 0</strong>
+            <div class="kanji-reading-options">
+              <button class="toggle-button kanji-korean-toggle" id="kanjiTracingKoreanToggle" type="button" aria-pressed="false">
+                한글 OFF
+              </button>
+              <button class="toggle-button" id="kanjiStrokeOrderToggle" type="button" aria-pressed="false">
+                획순 OFF
+              </button>
+              <button class="ghost-button" id="newKanjiTracing" type="button">새 연습</button>
+            </div>
+          </div>
+          <p class="kanji-reading-label">연한 회색 글자 위를 따라 쓰세요.</p>
+          <div class="kanji-writing-question" id="kanjiTracingQuestion"></div>
+          <div class="kanji-stroke-order" id="kanjiStrokeOrder" aria-label="현재 단어의 한자 획순" hidden></div>
+
+          <div class="kanji-writing-pad" id="kanjiTracingPad">
+            <canvas id="kanjiTracingCanvas" aria-label="한자 따라쓰기 필기판"></canvas>
+            <div class="kanji-tracing-tools">
+              <button class="ghost-button" id="prevKanjiTracing" type="button">이전</button>
+              <button class="ghost-button" id="undoKanjiTracingStroke" type="button">한 획 취소</button>
+              <button class="ghost-button" id="clearKanjiTracingCanvas" type="button">지우기</button>
+              <button class="primary-button" id="nextKanjiTracing" type="button">다음</button>
+            </div>
+          </div>
+          <p class="helper-text" id="kanjiTracingFeedback" aria-live="polite"></p>
+        </div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop" id="retryModal" hidden>
+      <section class="panel retry-dialog" role="dialog" aria-modal="true" aria-labelledby="retryDialogTitle">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">WRONG ANSWERS</p>
+            <h2 id="retryDialogTitle">오답 다시 풀기</h2>
+          </div>
+          <button class="ghost-button" id="closeRetry" type="button">닫기</button>
+        </div>
+
+        <div class="retry-progress" id="retryProgress">0 / 0</div>
+        <p class="retry-prompt-label" id="retryPromptLabel"></p>
+        <div class="retry-prompt" id="retryPrompt"></div>
+        <div class="retry-choice-grid" id="retryChoiceGrid"></div>
+        <form class="retry-text-form" id="retryTextForm" hidden>
+          <input id="retryTextInput" type="text" lang="ja" placeholder="답 입력" autocomplete="off" />
+          <button class="primary-button" id="retryTextSubmit" type="submit">확인</button>
+        </form>
+        <div class="retry-feedback-row">
+          <p class="helper-text" id="retryFeedback" aria-live="polite"></p>
+          <button class="primary-button" id="retryNext" type="button" hidden>다음 문제</button>
+        </div>
+        <div class="retry-results" id="retryResults" hidden></div>
+        <div class="retry-actions" id="retryActions" hidden>
+          <button class="primary-button" id="retryAgain" type="button">이번 오답 다시</button>
+          <button class="ghost-button" id="finishRetry" type="button">닫기</button>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
