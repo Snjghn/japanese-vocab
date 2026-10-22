@@ -125,6 +125,23 @@ button:disabled {
   min-height: 560px;
 }
 
+.card-search {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+  background: var(--surface);
+}
+
+.search-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.search-input-row input {
+  min-width: 0;
+}
+
 .wordbook-launch {
   display: grid;
   place-items: center;
@@ -400,7 +417,8 @@ button:disabled {
 }
 
 .field input,
-.field select {
+.field select,
+.search-input-row input {
   width: 100%;
   min-height: 42px;
   border: 1px solid var(--line);
@@ -412,7 +430,8 @@ button:disabled {
 }
 
 .field input:focus,
-.field select:focus {
+.field select:focus,
+.search-input-row input:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(36, 95, 199, 0.12);
 }
@@ -2321,18 +2340,67 @@ button:disabled {
     font-size: 16px;
   }
 
-  .topbar,
   .panel-head {
     align-items: stretch;
     flex-direction: column;
   }
 
+  .topbar {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .topbar > div {
+    min-width: 0;
+  }
+
+  .topbar .eyebrow {
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+  }
+
   .topbar h1 {
-    font-size: 2.45rem;
+    font-size: clamp(1.2rem, 5.5vw, 1.6rem);
+    line-height: 1.2;
+  }
+
+  #resetStudy {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 0 8px;
+    font-size: 0.7rem;
   }
 
   .card-panel {
     min-height: auto;
+    padding: 12px;
+  }
+
+  .card-panel .panel-head {
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 10px;
+  }
+
+  .card-panel h2 {
+    font-size: 1rem;
+  }
+
+  #cardCount {
+    flex: 0 0 auto;
+    font-size: 0.85rem;
+  }
+
+  .card-search {
+    position: sticky;
+    top: calc(8px + env(safe-area-inset-top));
+    z-index: 10;
+    padding: 4px 0;
+  }
+
+  .card-search input,
+  .card-search button {
+    min-height: 44px;
   }
 
   .learning-launch-grid {
@@ -2349,16 +2417,65 @@ button:disabled {
   }
 
   .flashcard {
-    min-height: 320px;
-    padding: 22px 14px;
+    min-height: clamp(220px, 28svh, 280px);
+    padding: 16px 12px;
+    gap: 6px;
+  }
+
+  .card-word {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: clamp(2.2rem, 12vw, 3.5rem);
+    line-height: 1.15;
+  }
+
+  .card-reading {
+    font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+  }
+
+  .card-meaning {
+    font-size: 1.15rem;
+  }
+
+  .card-tag {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .card-panel:has(#searchInput:focus) .flashcard {
+    min-height: 164px;
+    padding: 12px;
+    gap: 4px;
+  }
+
+  .card-panel:has(#searchInput:focus) .card-word {
+    font-size: 2.2rem;
   }
 
   .card-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .card-actions > * {
+    grid-column: span 2;
+    min-height: 44px;
+    padding: 0 8px;
   }
 
   .card-actions .primary-button {
     grid-column: span 2;
+  }
+
+  #prevCard {
+    grid-column: 1 / 4;
+    grid-row: 2;
+  }
+
+  #nextCard {
+    grid-column: 4 / 7;
+    grid-row: 2;
   }
 
   .stat-grid,

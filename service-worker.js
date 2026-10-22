@@ -1,11 +1,11 @@
-const CACHE_NAME = "japanese-vocab-v1";
+const CACHE_NAME = "japanese-vocab-v2-mobile-search";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./styles.css?v=20261021-pwa",
-  "./words.js?v=20261021-pwa",
-  "./app.js?v=20261021-pwa",
+  "./styles.css?v=20261022-mobile-search",
+  "./words.js?v=20261022-mobile-search",
+  "./app.js?v=20261022-mobile-search",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
   "./assets/icons/icon-maskable-512.png",

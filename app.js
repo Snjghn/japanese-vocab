@@ -3934,6 +3934,12 @@ function bindEvents() {
     scheduleSearch(event.currentTarget.value, true);
   });
 
+  $("#cardSearchForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    scheduleSearch(searchInput.value, true);
+    searchInput.blur();
+  });
+
   $("#miniWordbook").addEventListener("click", (event) => {
     const button = event.target.closest("[data-select-id]");
     if (!button) return;

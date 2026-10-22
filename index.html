@@ -13,9 +13,9 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png" />
-    <link rel="stylesheet" href="./styles.css?v=20261021-pwa" />
-    <script src="./words.js?v=20261021-pwa" defer></script>
-    <script src="./app.js?v=20261021-pwa" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=20261022-mobile-search" />
+    <script src="./words.js?v=20261022-mobile-search" defer></script>
+    <script src="./app.js?v=20261022-mobile-search" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -38,6 +38,14 @@
                 </div>
                 <strong id="cardCount">0 / 0</strong>
               </div>
+
+              <form class="card-search" id="cardSearchForm" role="search">
+                <label class="field" for="searchInput">단어 검색</label>
+                <div class="search-input-row">
+                  <input id="searchInput" type="search" placeholder="한자, 히라가나, 뜻 검색" autocomplete="off" enterkeyhint="search" />
+                  <button class="primary-button" type="submit">검색</button>
+                </div>
+              </form>
 
               <button class="flashcard" id="flashcard" type="button" aria-label="단어 카드 뒤집기">
                 <span class="card-side" id="cardSide">앞면</span>
@@ -122,10 +130,6 @@
                 <input id="cardLimitInput" type="number" min="1" inputmode="numeric" placeholder="전체" autocomplete="off" />
               </label>
               <button class="toggle-button" id="readingToggle" type="button" aria-pressed="false">히라가나 표시</button>
-              <label class="field">
-                <span>검색</span>
-                <input id="searchInput" type="search" placeholder="한자, 히라가나, 뜻 검색" autocomplete="off" />
-              </label>
             </div>
           </aside>
         </section>
